@@ -1,0 +1,55 @@
+Subject: [PATCH v3 0/8] ASoC: cs42l42: Add SoundWire support
+From: Stefan Binding <sbinding@opensource.cirrus.com>
+Date: Fri, 27 Jan 2023 16:51:03 +0000
+Message-Id: <20230127165111.3010960-1-sbinding@opensource.cirrus.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+
+The CS42L42 has a SoundWire interface for control and audio. This
+chain of patches adds support for this.
+
+Patches #1 .. #5 split out various changes to the existing code that
+are needed for adding Soundwire. These are mostly around clocking and
+supporting the separate probe and enumeration stages in SoundWire.
+
+Patches #6 .. #8 actually adds the SoundWire handling.
+
+Changes since v1:
+- fixes for various review comments from v1
+- add support for wakeup from clock stop using hardware interrupts
+- use port_prep callback to prepare/deprepare codec
+
+Changes since v2:
+- fix various comments
+- enable pm_runtime during probe
+
+Richard Fitzgerald (6):
+  ASoC: cs42l42: Add SOFT_RESET_REBOOT register
+  ASoC: cs42l42: Ensure MCLKint is a multiple of the sample rate
+  ASoC: cs42l42: Separate ASP config from PLL config
+  ASoC: cs42l42: Export some functions for SoundWire
+  ASoC: cs42l42: Add SoundWire support
+  ASoC: cs42l42: Don't set idle_bias_on
+
+Stefan Binding (2):
+  soundwire: stream: Add specific prep/deprep commands to port_prep
+    callback
+  ASoC: cs42l42: Wait for debounce interval after resume
+
+ drivers/soundwire/stream.c     |   4 +-
+ include/linux/soundwire/sdw.h  |   8 +-
+ include/sound/cs42l42.h        |   5 +
+ sound/soc/codecs/Kconfig       |   8 +
+ sound/soc/codecs/Makefile      |   2 +
+ sound/soc/codecs/cs42l42-sdw.c | 610 +++++++++++++++++++++++++++++++++
+ sound/soc/codecs/cs42l42.c     | 133 ++++---
+ sound/soc/codecs/cs42l42.h     |   9 +-
+ 8 files changed, 729 insertions(+), 50 deletions(-)
+ create mode 100644 sound/soc/codecs/cs42l42-sdw.c
+
+-- 
+2.34.1
+
+
+
